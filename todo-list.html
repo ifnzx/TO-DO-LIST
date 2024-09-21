@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Pekerjaan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .task-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .task-item {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .task-item input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .task-item .task-name {
+            flex-grow: 1;
+        }
+        .task-item .task-deadline {
+            color: #777;
+            font-size: 0.9em;
+            margin-right: 10px;
+        }
+        .completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+        .edit-button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .add-task-form {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .add-task-form input {
+            flex-grow: 1;
+            padding: 5px;
+        }
+        .add-task-form button {
+            padding: 5px 10px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Daftar Pekerjaan</h1>
+    <ul class="task-list" id="taskList">
+        <!-- Daftar tugas akan ditambahkan di sini oleh JavaScript -->
+    </ul>
+
+    <form id="addTaskForm" class="add-task-form">
+        <input type="text" id="newTaskName" placeholder="Nama tugas baru" required>
+        <input type="date" id="newTaskDeadline" required>
+        <button type="submit">Tambah Tugas</button>
+    </form>
+
+    <script>
+        let tasks = [
+            { id: 1, name: "Membuat proposal proyek", deadline: "2024-10-01" },
+            { id: 2, name: "Menyelesaikan laporan keuangan", deadline: "2024-09-15" },
+            { id: 3, name: "Mengadakan rapat tim", deadline: "2024-09-10" },
+            { id: 4, name: "Mengirim invoice ke klien", deadline: "2024-09-30" },
+            { id: 5, name: "Memperbarui website perusahaan", deadline: "2024-10-15" }
+        ];
+
+        function createTaskElement(task) {
+            const li = document.createElement('li');
+            li.className = 'task-item';
+            li.id = `task-${task.id}`;
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.addEventListener('change', function() {
+                li.classList.toggle('completed');
+            });
+
+            const taskName = document.createElement('span');
+            taskName.className = 'task-name';
+            taskName.textContent = task.name;
+
+            const deadline = document.createElement('span');
+            deadline.className = 'task-deadline';
+            deadline.textContent = `Deadline: ${task.deadline}`;
+
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit';
+            editButton.className = 'edit-button';
+            editButton.addEventListener('click', () => editTask(task.id));
+
+            li.appendChild(checkbox);
+            li.appendChild(taskName);
+            li.appendChild(deadline);
+            li.appendChild(editButton);
+
+            return li;
+        }
+
+        function populateTaskList() {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = ''; // Clear existing tasks
+            tasks.forEach(task => {
+                taskList.appendChild(createTaskElement(task));
+            });
+        }
+
+        function editTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            const newName = prompt('Edit nama tugas:', task.name);
+            const newDeadline = prompt('Edit deadline (YYYY-MM-DD):', task.deadline);
+            
+            if (newName && newDeadline) {
+                task.name = newName;
+                task.deadline = newDeadline;
+                populateTaskList();
+            }
+        }
+
+        function addTask(event) {
+            event.preventDefault();
+            const nameInput = document.getElementById('newTaskName');
+            const deadlineInput = document.getElementById('newTaskDeadline');
+            
+            const newTask = {
+                id: tasks.length + 1,
+                name: nameInput.value,
+                deadline: deadlineInput.value
+            };
+            
+            tasks.push(newTask);
+            populateTaskList();
+            
+            // Reset form
+            nameInput.value = '';
+            deadlineInput.value = '';
+        }
+
+        // Add event listener for form submission
+        document.getElementById('addTaskForm').addEventListener('submit', addTask);
+
+        // Populate the task list when the page loads
+        window.onload = populateTaskList;
+    </script>
+</body>
+</html>
